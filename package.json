@@ -1,0 +1,29 @@
+{
+  "name": "create-access-list-bug",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "demo": "ts-node demo.ts",
+    "demo:base": "ts-node demo.ts --chain base",
+    "demo:celo": "ts-node demo.ts --chain celo",
+    "demo:help": "ts-node demo.ts --help",
+    "demo:custom-rpc": "ts-node demo.ts --chain base --rpc-url https://base.llamarpc.com"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.25",
+    "@types/yargs": "^17.0.32",
+    "dotenv": "^16.4.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "viem": "2.34.0",
+    "yargs": "^17.7.2"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+}
