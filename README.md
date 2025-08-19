@@ -25,7 +25,7 @@ Implementation varies significantly by provider:
 
 ## 🧪 Reproduction
 
-This repository contains a TypeScript demo that tests `eth_createAccessList` implementation across different networks and RPC providers using a simple ERC-20 token transfer transaction.
+This repository contains a TypeScript demo that tests `eth_createAccessList` implementation across different networks and RPC providers using a simple USDC token transfer transaction.
 
 ### Setup
 
@@ -81,10 +81,11 @@ Using `--rpc-url https://mainnet.base.org` also fails with implementation issues
 
 ### Transaction Details
 
+- **Token**: USDC (USD Coin)
 - **Method**: ERC-20 `transfer(address,uint256)`
 - **Token on Base**: USDC (`0x833589fcd6edb6e08f4c7c32d4f71b54bda02913`)
 - **Token on Celo**: USDC (`0xceba9300f2b948710d2653dd7b07f33a8b32118c`)
-- **Amount**: 0.01 tokens
+- **Amount**: 0.01 USDC
 - **Target**: Self-transfer (same address for from/to)
 
 ### RPC Request
