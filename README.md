@@ -14,7 +14,7 @@ _Last tested: August 20, 2025_
 | ------- | ---------------- | ----------------- | --------------- | ------------------------------------ |
 | Base    | Alchemy          | ✅ Works          | ✅ Works        | Perfect implementation               |
 | Base    | Public RPC       | ❌ Gas estimation | ✅ Works        | Wants ~0.012 ETH for simple transfer |
-| Celo    | Forno (Official) | ❌ Gas estimation | ✅ Works        | Wants 2.5 ETH for simple transfer    |
+| Celo    | Forno (Official) | ❌ Gas estimation | ✅ Works        | Wants 2.5 CELO for simple transfer   |
 | Celo    | Alchemy          | ❌ Server crash   | ❌ Server crash | Handler crashes internally           |
 | Celo    | QuickNode        | ❌ Gas estimation | ✅ Works        | Wants 30 ETH for simple transfer     |
 
@@ -75,12 +75,16 @@ The test performs a simple USDC transfer (0.01 USDC self-transfer) using the `et
 <details>
 <summary><strong>Forno (Official Celo RPC)</strong></summary>
 
-```json
-{
-  "code": -32601,
-  "message": "rpc method is not whitelisted"
-}
+**Without gas parameter:**
+
 ```
+err: insufficient funds for gas * price + value:
+address 0xe30E59040385cfa09e5C61241C20f0673F314C98 have 95318937765000000 want 2500050000000000000
+```
+
+Gas estimation: ~2.5 CELO for a simple USDC transfer (account balance: ~0.095 CELO).
+
+**With gas parameter:** ✅ Works correctly and returns proper access list.
 
 </details>
 
@@ -97,12 +101,16 @@ Details: method handler crashed
 <details>
 <summary><strong>QuickNode Celo</strong></summary>
 
+**Without gas parameter:**
+
 ```
 err: insufficient funds for gas * price + value:
 address 0xe30E59040385cfa09e5C61241C20f0673F314C98 have 99063787553000000 want 30000600000000000000
 ```
 
 Gas estimation: ~30 ETH for a simple USDC transfer (account balance: ~0.1 ETH).
+
+**With gas parameter:** ✅ Works correctly and returns proper access list.
 
 </details>
 
@@ -111,17 +119,27 @@ Gas estimation: ~30 ETH for a simple USDC transfer (account balance: ~0.1 ETH).
 <details>
 <summary><strong>Base Public RPC</strong></summary>
 
-Similar gas estimation issues as seen with QuickNode on Celo.
+**Without gas parameter:**
+
+```
+err: insufficient funds for gas * price + value:
+address 0xe30E59040385cfa09e5C61241C20f0673F314C98 have 99568782918001 want 3000355200000000
+```
+
+Gas estimation: ~0.003 ETH for a simple USDC transfer (account balance: ~0.0001 ETH).
+
+**With gas parameter:** ✅ Works correctly and returns proper access list.
 
 </details>
 
 ## Observations
 
-The test results show that `eth_createAccessList` implementation varies significantly across providers:
+The test results reveal important patterns about `eth_createAccessList` implementation across providers:
 
-1. **Network vs Provider**: The same network shows different results depending on the RPC provider
-2. **Error Types**: Failures range from method not being available to server crashes to incorrect gas calculations
-3. **Consistency**: Only Base with Alchemy shows consistent, expected behavior
+1. **Gas Estimation Issues**: Most providers (4/5) have gas estimation bugs when no gas parameter is provided, but work correctly when gas is specified
+2. **Network Agnostic**: Gas estimation problems affect providers on both Base and Celo networks
+3. **Simple Workaround**: Calling `estimateGas` first and passing the result to `createAccessList` resolves most issues
+4. **Only One Broken Provider**: Alchemy on Celo is the only provider with fundamental server stability issues
 
 ### Example Fallback Pattern
 
