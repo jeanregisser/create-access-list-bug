@@ -173,19 +173,69 @@ const walletClient = createWalletClient({
 
   console.log("Request:", request);
 
-  // Create access list
-  const result = await publicClient.createAccessList({
-    account: accountAddress,
-    to: request.address,
-    data: encodeFunctionData({
-      abi: request.abi,
-      functionName: request.functionName,
-      args: request.args,
-    }),
-    value: 0n,
-  });
+  // First, estimate gas for the transaction
+  console.log("\n📊 Estimating gas...");
+  let estimatedGas: bigint;
+  try {
+    estimatedGas = await publicClient.estimateGas({
+      account: accountAddress,
+      to: request.address,
+      data: encodeFunctionData({
+        abi: request.abi,
+        functionName: request.functionName,
+        args: request.args,
+      }),
+      value: 0n,
+    });
+    console.log(`Estimated gas: ${estimatedGas}`);
+  } catch (gasEstimateError) {
+    console.log("❌ Gas estimation failed:", gasEstimateError);
+    estimatedGas = 50000n; // fallback gas amount
+    console.log(`Using fallback gas: ${estimatedGas}`);
+  }
 
-  console.log("Create access list result:", result);
+  // Create access list without specifying gas
+  console.log("\n🔍 Creating access list (without gas parameter)...");
+  try {
+    const resultWithoutGas = await publicClient.createAccessList({
+      account: accountAddress,
+      to: request.address,
+      data: encodeFunctionData({
+        abi: request.abi,
+        functionName: request.functionName,
+        args: request.args,
+      }),
+      value: 0n,
+    });
+    console.log(
+      "✅ Create access list result (without gas):",
+      resultWithoutGas
+    );
+  } catch (accessListError1) {
+    console.log(
+      "❌ Create access list failed (without gas):",
+      accessListError1
+    );
+  }
+
+  // Create access list with estimated gas
+  console.log("\n🔍 Creating access list (with estimated gas)...");
+  try {
+    const resultWithGas = await publicClient.createAccessList({
+      account: accountAddress,
+      to: request.address,
+      data: encodeFunctionData({
+        abi: request.abi,
+        functionName: request.functionName,
+        args: request.args,
+      }),
+      value: 0n,
+      gas: estimatedGas,
+    });
+    console.log("✅ Create access list result (with gas):", resultWithGas);
+  } catch (accessListError2) {
+    console.log("❌ Create access list failed (with gas):", accessListError2);
+  }
 
   // Early return for fallback mode - skip transaction sending
   if (isUsingFallback) {

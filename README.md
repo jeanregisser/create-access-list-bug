@@ -6,17 +6,17 @@ This repository demonstrates implementation inconsistencies with the `eth_create
 
 The `eth_createAccessList` method shows inconsistent behavior across different RPC providers and networks when tested with a simple USDC transfer transaction.
 
-_Last tested: August 19, 2025_
+_Last tested: August 20, 2025_
 
 ### Test Results
 
-| Network | Provider         | Status | Issue                                     |
-| ------- | ---------------- | ------ | ----------------------------------------- |
-| Base    | Alchemy          | ✅     | Works as expected                         |
-| Base    | Public RPC       | ❌     | Incorrect gas estimation                  |
-| Celo    | Forno (Official) | ❌     | Method not whitelisted                    |
-| Celo    | Alchemy          | ❌     | Server crashes                            |
-| Celo    | QuickNode        | ❌     | Estimates 30 ETH gas for simple transfers |
+| Network | Provider         | Without Gas Param | With Gas Param  | Notes                                |
+| ------- | ---------------- | ----------------- | --------------- | ------------------------------------ |
+| Base    | Alchemy          | ✅ Works          | ✅ Works        | Perfect implementation               |
+| Base    | Public RPC       | ❌ Gas estimation | ✅ Works        | Wants ~0.012 ETH for simple transfer |
+| Celo    | Forno (Official) | ❌ Gas estimation | ✅ Works        | Wants 2.5 ETH for simple transfer    |
+| Celo    | Alchemy          | ❌ Server crash   | ❌ Server crash | Handler crashes internally           |
+| Celo    | QuickNode        | ❌ Gas estimation | ✅ Works        | Wants 30 ETH for simple transfer     |
 
 ## Reproduction
 
